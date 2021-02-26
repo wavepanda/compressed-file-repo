@@ -23,11 +23,19 @@ read -p "enter 'yes' or 'no': " yum_input
 if [[ "$yum_input" = "yes" ]];
 then
 	version=`awk '{print $4}' /etc/redhat-release|awk -F . '{print $1}'`
-	echo -e "◎Downloading mirror of centos$version\n"
-	mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup &&\
-	curl -o /etc/yum.repos.d/CentOS-Base.repo mirrors.aliyun.com/repo/Centos-$version.repo &&\
-	curl -o /etc/yum.repos.d/epel.repo mirrors.aliyun.com/repo/epel-7.repo &&\
-	yum clean all && yum makecache
+	if [ $version = 7 ];then
+		echo -e "◎Downloading mirror of centos7\n"
+		mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup &&\
+		curl -o /etc/yum.repos.d/CentOS-Base.repo mirrors.aliyun.com/repo/Centos-7.repo &&\
+		curl -o /etc/yum.repos.d/epel.repo mirrors.aliyun.com/repo/epel-7.repo &&\
+		yum clean all && yum makecache
+	elif [ $version = 8 ];then
+		echo -e "◎Downloading mirror of centos8\n"
+		mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup &&\
+		curl -o /etc/yum.repos.d/CentOS-Base.repo mirrors.aliyun.com/repo/Centos-8.repo &&\
+		dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y &&\
+		dnf clean all && dnf makecache
+	fi
 elif [[ "$yum_input" = "no" ]];
 then
 	echo "Using source yum mirror"
